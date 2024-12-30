@@ -59,6 +59,9 @@ function takeCommand(message){
     else if(message.includes("open google")){
         window.open("https://google.com", "_blank");
         speak("Opening Google...")
+    } 
+    else if(message.includes("who are you")){
+        speak("I am nova your virtual assistant. created by Divakar rajput")
     }
     else if(message.includes("open youtube")){
         window.open("https://youtube.com", "_blank");
