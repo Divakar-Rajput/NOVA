@@ -31,7 +31,7 @@ function wishMe(){
 }
 
 window.addEventListener('load', ()=>{
-    speak("Initializing JARVIS..");
+    speak("Initializing NOVA..");
     wishMe();
 });
 
@@ -42,7 +42,7 @@ const recognition =  new SpeechRecognition();
 recognition.onresult = (event)=>{
     const currentIndex = event.resultIndex;
     const transcript = event.results[currentIndex][0].transcript;
-    content.textContent = transcript;
+    content.textContent += transcript;
     takeCommand(transcript.toLowerCase());
 
 }
@@ -72,12 +72,6 @@ function takeCommand(message){
         speak("Opening Facebook...")
     }
 
-    else if(message.includes('what is') || message.includes('who is') || message.includes('what are')) {
-        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
-        const finalText = "This is what i found on internet regarding " + message;
-	    speak(finalText);
-  
-    }
 
     else if(message.includes('wikipedia')) {
         window.open(`https://en.wikipedia.org/wiki/${message.replace("wikipedia", "")}`, "_blank");
@@ -98,7 +92,7 @@ function takeCommand(message){
     }
 
     else if(message.includes('calculator')) {
-        window.open('Calculator:///')
+        window.open('Calculator://')
         const finalText = "Opening Calculator";
         speak(finalText);
     }
