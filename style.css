@@ -34,7 +34,6 @@
   align-items: center;
 }
 
-
 .main .image-container h1 {
   color: #00bcd4;
   text-align: center;
@@ -48,18 +47,8 @@
   margin-bottom: 40px;
 }
 
-.main .input {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40vw;
-  height: 50px;
-  border-radius: 20px;
-  background: rgb(202 253 255 / 50%);
-}
-
-.main .input .talk {
-  background: transparent;
+.main .talk {
+  background: #00bcd4;
   outline: none;
   border: none;
   width: 50px;
@@ -69,15 +58,49 @@
   align-items: center;
   font-size: 15px;
   cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s, transform 0.3s;
+  margin-top: 20px;
 }
 
-.main .input .talk i {
+.main .talk:hover {
+  background: #0097a7;
+  transform: scale(1.1);
+}
+
+.main .talk i {
   font-size: 20px;
-  color: #aed0d0;
+  color: #fff;
 }
 
-.main .input .content {
+.main .content {
   color: #aed0d0;
   font-size: 15px;
-  margin-right: 20px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .main .image-container .image img {
+    width: 250px;
+  }
+
+  .main .image-container h1 {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main .image-container .image img {
+    width: 200px;
+  }
+
+  .main .image-container h1 {
+    font-size: 25px;
+  }
+
+  .main .content {
+    font-size: 12px;
+  }
 }

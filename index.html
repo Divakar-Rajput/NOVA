@@ -8,8 +8,8 @@
     <title>NOVA - Virtual Assistant</title>
     <link rel="shortcut icon" href="avatar.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="hemini.css">
 </head>
 
 <body>
@@ -19,13 +19,46 @@
                 <img src="giphy.gif" alt="image">
             </div>
             <h1>N O V A</h1>
-            <p>I'm a Virtual Assistant NOVA, How may i help you?</p>
+            <p>I'm a Virtual Assistant NOVA, How may I help you?</p>
         </div>
-        <div class="input">
-            <button class="talk"><i class="fas fa-microphone-alt"></i></button>
-            <h1 class="content"> Click here to speak</h1>
-        </div>
+        <!-- <button class="talk"><i class="fas fa-microphone-alt"></i></button> -->
+        <!-- <h1 class="content">Click here to speak</h1> -->
     </section>
+    <style>
+        .chatbot {
+            position: absolute;
+            top: 0;
+            width: 350px;
+            height: 100vh;
+            z-index: 9999999999;
+        }
+    </style>
+    <!-- <object data="hemini.html" type=""></object> -->
+    <div class="chatbot">
+        <header class="header">
+            
+        </header>
+
+        <!-- Chat List / Container -->
+        <div class="chat-list"></div>
+
+        <!-- Typing Area -->
+        <div class="typing-area">
+            <form action="#" class="typing-form">
+                <div class="input-wrapper">
+                    <input type="text" placeholder="Enter a prompt here" class="typing-input" required />
+                    <button id="send-message-button" class="icon material-symbols-sharp">send</button>
+                </div>
+                <div class="action-buttons">
+                    <span class="talk icon material-symbols-sharp" title="Click Here ">mic</span>
+                    
+                </div>
+            </form>
+            <p class="disclaimer-text">
+                NOVA may display inaccurate info, including about people, so double-check its responses.
+            </p>
+        </div>
+    </div>
     <script src="app.js"></script>
 </body>
 

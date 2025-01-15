@@ -1,106 +1,130 @@
-const btn = document.querySelector('.talk')
-const content = document.querySelector('.content')
+const btn = document.querySelector('.talk');
+const content = document.querySelector('.typing-input');
 
-
-function speak(text){
-    const text_speak = new SpeechSynthesisUtterance(text);
-
-    text_speak.rate = 1;
-    text_speak.volume = 1;
-    text_speak.pitch = 1;
-    text_speak.lang = 'hi-IN';
-
-    window.speechSynthesis.speak(text_speak);
+// Sanitize text to remove unsupported special characters
+function sanitizeText(text) {
+    return text.replace(/[^a-zA-Z0-9., ]/g, ""); // Retain only letters, numbers, spaces, commas, and periods
 }
 
-function wishMe(){
-    var day = new Date();
-    var hour = day.getHours();
-
-    if(hour>=0 && hour<12){
-        speak("Good Morning Boss...")
+function speak(text) {
+    const sanitizedText = sanitizeText(text);
+    if (!sanitizedText) {
+        console.warn("No valid text to speak.");
+        return;
     }
 
-    else if(hour>12 && hour<17){
-        speak("Good Afternoon Master...")
-    }
+    const textSpeak = new SpeechSynthesisUtterance(sanitizedText);
+    textSpeak.rate = 1;
+    textSpeak.volume = 1;
+    textSpeak.pitch = 1;
+    textSpeak.lang = 'hi-IN';
 
-    else{
-        speak("Good Evenining Sir...")
-    }
+    // Stop further speech when this paragraph ends
+    textSpeak.onend = () => {
+        console.log("Completed speaking the paragraph:", sanitizedText);
+    };
 
+    window.speechSynthesis.speak(textSpeak);
 }
 
-window.addEventListener('load', ()=>{
-    speak("Initializing NOVA..");
-    wishMe();
+function speakFirstParagraphOnly(text) {
+    const paragraphs = text.split("\n").map(paragraph => paragraph.trim()).filter(paragraph => paragraph);
+    if (paragraphs.length > 0) {
+        speak(paragraphs[0]); // Speak only the first paragraph
+    } else {
+        console.warn("No valid paragraphs to speak.");
+    }
+}
+
+function greetUser() {
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? "Good Morning Boss..."
+        : hour < 17 ? "Good Afternoon Master..."
+            : "Good Evening Sir...";
+    speak(greeting);
+    speak("Welcome to your AI assistant.");
+}
+
+window.addEventListener('load', () => {
+    speak("Initializing NOVA...");
+    greetUser();
 });
 
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+let voiceCommand = null;
 
-const recognition =  new SpeechRecognition();
+recognition.onresult = (event) => {
+    const transcript = event.results[event.resultIndex][0].transcript.toLowerCase();
+    content.value = transcript;
+    voiceCommand = transcript;
+    processCommand(transcript);
+};
 
-recognition.onresult = (event)=>{
-    const currentIndex = event.resultIndex;
-    const transcript = event.results[currentIndex][0].transcript;
-    content.textContent += transcript;
-    takeCommand(transcript.toLowerCase());
+btn.addEventListener('click', () => {
+    content.value = "Listening...";
+    recognition.start();
+});
 
+const API_KEY = "AIzaSyDDXnpy-6q1_gd0b3NJGvUuJljiajkZTZs"; // Replace with your API key
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+function processCommand(command) {
+    if (command.includes('hey') || command.includes('hello')) {
+        speak("Hello Sir, How May I Help You?");
+    } else if (command.includes("open google")) {
+        window.open("https://google.com", "_blank");
+        speak("Opening Google...");
+    } else if (command.includes("who are you")) {
+        speak("I am NOVA, your virtual assistant, created by Divakar Rajput.");
+    } else if (command.includes("open youtube")) {
+        window.open("https://youtube.com", "_blank");
+        speak("Opening YouTube...");
+    } else if (command.includes("open facebook")) {
+        window.open("https://facebook.com", "_blank");
+        speak("Opening Facebook...");
+    } else if (command.includes('wikipedia')) {
+        const query = command.replace("wikipedia", "").trim();
+        window.open(`https://en.wikipedia.org/wiki/${query}`, "_blank");
+        speak(`This is what I found on Wikipedia regarding ${query}.`);
+    } else if (command.includes('time')) {
+        const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        speak(`The current time is ${time}.`);
+    } else if (command.includes('date')) {
+        const date = new Date().toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" });
+        speak(`Today's date is ${date}.`);
+    } else if (command.includes('calculator')) {
+        speak("Sorry, opening a calculator is not supported in this browser.");
+    } else if (command.includes('on google')) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(command)}`, "_blank");
+        speak(`I found some information for ${command} on Google.`);
+    } else {
+        fetchResponseFromAPI();
+    }
 }
 
-btn.addEventListener('click', ()=>{
-    content.textContent = "Listening...."
-    recognition.start();
-})
+async function fetchResponseFromAPI() {
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: voiceCommand }],
+                    },
+                ],
+            }),
+        });
 
-function takeCommand(message){
-    if(message.includes('hey') || message.includes('hello')){
-        speak("Hello Sir, How May I Help You?");
-    }
-    else if(message.includes("open google")){
-        window.open("https://google.com", "_blank");
-        speak("Opening Google...")
-    } 
-    else if(message.includes("who are you")){
-        speak("I am nova your virtual assistant. created by Divakar rajput")
-    }
-    else if(message.includes("open youtube")){
-        window.open("https://youtube.com", "_blank");
-        speak("Opening Youtube...")
-    }
-    else if(message.includes("open facebook")){
-        window.open("https://facebook.com", "_blank");
-        speak("Opening Facebook...")
-    }
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error.message);
 
-
-    else if(message.includes('wikipedia')) {
-        window.open(`https://en.wikipedia.org/wiki/${message.replace("wikipedia", "")}`, "_blank");
-        const finalText = "This is what i found on wikipedia regarding " + message;
-        speak(finalText);
-    }
-
-    else if(message.includes('time')) {
-        const time = new Date().toLocaleString(undefined, {hour: "numeric", minute: "numeric"})
-        const finalText = time;
-        speak(finalText);
-    }
-
-    else if(message.includes('date')) {
-        const date = new Date().toLocaleString(undefined, {month: "short", day: "numeric"})
-        const finalText = date;
-        speak(finalText);
-    }
-
-    else if(message.includes('calculator')) {
-        window.open('Calculator://')
-        const finalText = "Opening Calculator";
-        speak(finalText);
-    }
-
-    else {
-        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
-        const finalText = "I found some information for " + message + " on google";
-        speak(finalText);
+        const reply = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1");
+        speakFirstParagraphOnly(reply); // Speak only the first paragraph
+        console.log(reply);
+    } catch (error) {
+        console.error("Fetch error:", error);
+        speak("Sorry, there was an error fetching the response.");
     }
 }
